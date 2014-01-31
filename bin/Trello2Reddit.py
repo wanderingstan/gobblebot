@@ -3,15 +3,10 @@ from trello import TrelloApi
 # Our app config['ration']
 
 def post_trello_to_reddit(config):
-	"""
-	Post latest Trello card to reddit
-	"""
-	
-	# Login to Reddit
-	user_agent = (config['bot_name']+" by /u/"+config['admin_reddit_user'])
-	r = praw.Reddit(user_agent=user_agent)
-	r.login(config['bot_reddit_user'], config['bot_reddit_password'])
+	"""Post latest Trello card to reddit"""
 
+	# Login to Reddit
+	r.login(config['bot_reddit_user'], config['bot_reddit_password'])
 	# Login to Trello
 	trello = TrelloApi(config['trello_app_key'], token=config['trello_token'])
 
@@ -43,30 +38,3 @@ def post_trello_to_reddit(config):
 		card_to_post['id'], 
 		idList=config['trello_finished_list_id'], 
 		desc=new_desc)
-
-	# TODO: Move the card to the *top* of the FINISHED list
-	# See here: http://stackoverflow.com/questions/14446859/what-does-the-pos-actually-mean-in-the-trello-api
-
-	# Optional send of confirmation email
-	# See here: http://www.nixtutor.com/linux/send-mail-through-gmail-with-python/
-	if all (k in config for k in (
-		"email_username",
-		"email_password",
-		"email_server",
-		"email_from",
-		"email_to"
-	)):
-		import smtplib  
-		msg = "Posted card to reddit. Title was:\n%s\nAnd body was:\n%s\nReddit URL is:%s\n\nGobble gobble!" % (
-			card_to_post['name'],
-			card_to_post['desc'],
-			submission.url
-			)  
-		server = smtplib.SMTP(config['email_server'])  
-		server.starttls()  
-		server.login(config['email_username'],config['email_password'])  
-		server.sendmail(config['email_from'], config['email_to'], msg)  
-		server.quit()  
-
-
-	return submission, result
