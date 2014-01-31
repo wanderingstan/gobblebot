@@ -1,0 +1,11 @@
+distribute==0.6.28
+numpy==1.6.2
+praw==2.1.12
+requests==2.2.1
+six==1.5.2
+trello==0.9.1
+update-checker==0.8
+virtualenv==1.8.2
+virtualenv-clone==0.2.4
+virtualenvwrapper==3.6
+wsgiref==0.1.2
