@@ -12,7 +12,7 @@ def read_env():
     directory.
     """
     try:
-        with open('../.env') as f:
+        with open('.env') as f:
             content = f.read()
     except IOError:
         content = ''
