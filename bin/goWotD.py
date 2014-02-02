@@ -1,4 +1,4 @@
-import os, re
+import os
 import Trello2Reddit
 import pprint
 import praw, trello
@@ -6,35 +6,6 @@ import praw, trello
 # Debug output
 pp = pprint.PrettyPrinter(indent=4)
 
-def read_env():
-    """Pulled from Honcho code with minor updates, reads local default
-    environment variables from a .env file located in the project root
-    directory.
-    """
-    try:
-        with open('.env') as f:
-            content = f.read()
-    except IOError:
-        content = ''
-        print "Cout not read env file"
- 
-    for line in content.splitlines():
-        m1 = re.match(r'\A([A-Za-z_0-9]+)=(.*)\Z', line)
-        if m1:
-            key, val = m1.group(1), m1.group(2)
-            m2 = re.match(r"\A'(.*)'\Z", val)
-            if m2:
-                val = m2.group(1)
-            m3 = re.match(r'\A"(.*)"\Z', val)
-            if m3:
-                val = re.sub(r'\\(.)', r'\1', m3.group(1))
-            os.environ.setdefault(key, val)
-
-# Load our environment variables
-read_env()
-
-# Load configuration from environment variables 
-# (These are set in .env file, which for security is not in git)
 config = {
 
 	#
@@ -72,13 +43,35 @@ print config
 
 try:
 	# Do it!
-	(reddit_submission, trello_response) = Trello2Reddit.post_trello_to_reddit(config)
+	(reddit_post, trello_card) = Trello2Reddit.post_trello_to_reddit(config)
 except praw.errors.InvalidUserPass:
 	print ("Invalid reddit username/password. Tried %s and %s" % (config['bot_reddit_user'],config['bot_reddit_password']))
 	exit()
 
+	# TODO: Add WotD to subreddit wiki
+	# https://praw.readthedocs.org/en/latest/pages/code_overview.html#praw.__init__.AuthenticatedReddit.edit_wiki_page
+
+
+# Optional send of confirmation email
+# See here: http://www.nixtutor.com/linux/send-mail-through-gmail-with-python/
+import smtplib  
+msg = "Posted card to reddit. Title was:\n%s\nAnd body was:\n%s\nReddit URL is:%s\n\nGobble gobble!" % (
+	card_to_post['name'],
+	card_to_post['desc'],
+	submission.url
+)  
+server = smtplib.SMTP(config['email_server'])  
+server.starttls()  
+server.login(config['email_username'],config['email_password'])  
+server.sendmail(config['email_from'], config['email_to'], msg)  
+server.quit()  
+
+
 print "Trello response"
-pp.pprint(trello_response)
+pp.pprint(trello_card)
+
+print "Reddit/Praw response"
+pp.pprint(reddit_post)
 
 print "Posted latest WotD to Reddit. (Hopefully)"
 

@@ -11,7 +11,7 @@ def read_env():
             content = f.read()
     except IOError:
         content = ''
-        print "Cout not read env file"
+        print "Could not read env file"
  
     for line in content.splitlines():
         m1 = re.match(r'\A([A-Za-z_0-9]+)=(.*)\Z', line)
