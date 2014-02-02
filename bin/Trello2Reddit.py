@@ -38,7 +38,7 @@ def post_trello_to_reddit(config):
 		config['bot_name'], 
 		config['subreddit'],
 		time.strftime("%Y-%m-%d"),
-		submission.url))
+		reddit_submission.url))
 
 	# Move the card to FINISHED list, update description
 	trello_updated_card = trello.cards.update(

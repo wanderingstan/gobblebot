@@ -24,6 +24,8 @@ def read_env():
             if m3:
                 val = re.sub(r'\\(.)', r'\1', m3.group(1))
             os.environ.setdefault(key, val)
+            print ("export %s='%s'" % (key,val))
 
 if __name__ == "__main__":
     read_env()
+

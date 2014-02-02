@@ -2,6 +2,7 @@ import os
 import Trello2Reddit
 import pprint
 import praw, trello
+import read_env
 
 # Debug output
 pp = pprint.PrettyPrinter(indent=4)
@@ -54,18 +55,24 @@ except praw.errors.InvalidUserPass:
 
 # Optional send of confirmation email
 # See here: http://www.nixtutor.com/linux/send-mail-through-gmail-with-python/
-import smtplib  
-msg = "Posted card to reddit. Title was:\n%s\nAnd body was:\n%s\nReddit URL is:%s\n\nGobble gobble!" % (
-	card_to_post['name'],
-	card_to_post['desc'],
-	submission.url
-)  
-server = smtplib.SMTP(config['email_server'])  
-server.starttls()  
-server.login(config['email_username'],config['email_password'])  
-server.sendmail(config['email_from'], config['email_to'], msg)  
-server.quit()  
-
+if all (k in config for k in (
+	"email_username",
+	"email_password",
+	"email_server",
+	"email_from",
+	"email_to"
+)):
+	import smtplib  
+	msg = "Posted card to reddit. Title was:\n%s\nAnd body was:\n%s\nReddit URL is:%s\n\nGobble gobble!" % (
+		card_to_post['name'],
+		card_to_post['desc'],
+		reddit_post.url
+		)  
+	server = smtplib.SMTP(config['email_server'])  
+	server.starttls()  
+	server.login(config['email_username'],config['email_password'])  
+	server.sendmail(config['email_from'], config['email_to'], msg)  
+	server.quit()  
 
 print "Trello response"
 pp.pprint(trello_card)
@@ -74,4 +81,8 @@ print "Reddit/Praw response"
 pp.pprint(reddit_post)
 
 print "Posted latest WotD to Reddit. (Hopefully)"
+
+print "Word was " + trello_card['name']
+print "Reddit URL is " + reddit_post.url
+
 
