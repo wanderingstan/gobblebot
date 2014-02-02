@@ -52,8 +52,7 @@ def post_trello_to_reddit(config):
 	# Move the card to FINISHED list
 	trello_updated_card = trello.cards.update(
 		card_to_post['id'], 
-		idList=config['trello_finished_list_id']
-		pos=last_finished_card['pos'])
+		idList=config['trello_finished_list_id'])
 
 	# # TODO: Move the card to the *top* of the FINISHED list
 	# # See here: http://stackoverflow.com/questions/14446859/what-does-the-pos-actually-mean-in-the-trello-api
