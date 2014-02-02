@@ -33,18 +33,18 @@ def post_trello_to_reddit(config):
 		text=card_to_post['desc'])
 
 	# Add a note to desc indicating that the card was posted, with link to post
-	new_desc = ("%s\n\n(%s posted to /r/%s on %s with URL %s)" % (
-		card_to_post['desc'], 
-		config['bot_name'], 
+	comment_text = ("I posted to /r/%s on %s with URL %s" % (
 		config['subreddit'],
 		time.strftime("%Y-%m-%d"),
 		reddit_submission.url))
+	trello.cards.new_action_comment(
+		card_to_post['id'],
+		comment_text)	
 
-	# Move the card to FINISHED list, update description
+	# Move the card to FINISHED list
 	trello_updated_card = trello.cards.update(
 		card_to_post['id'], 
-		idList=config['trello_finished_list_id'], 
-		desc=new_desc)
+		idList=config['trello_finished_list_id'])
 
 	# TODO: Move the card to the *top* of the FINISHED list
 	# See here: http://stackoverflow.com/questions/14446859/what-does-the-pos-actually-mean-in-the-trello-api
