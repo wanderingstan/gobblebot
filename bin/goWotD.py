@@ -39,14 +39,11 @@ config = {
 	'trello_finished_list_id' : os.environ['TRELLO_FINISHED_LIST_ID'],
 }
 
-
-print config
-
 try:
 	# Do it!
 	(reddit_post, trello_card) = Trello2Reddit.post_trello_to_reddit(config)
 except praw.errors.InvalidUserPass:
-	print ("Invalid reddit username/password. Tried %s and %s" % (config['bot_reddit_user'],config['bot_reddit_password']))
+	print ("Invalid reddit username/password.")
 	exit()
 
 	# TODO: Add WotD to subreddit wiki
@@ -80,7 +77,7 @@ pp.pprint(trello_card)
 print "Reddit/Praw response"
 pp.pprint(reddit_post)
 
-print "Posted latest WotD to Reddit. (Hopefully)"
+print "Posted latest WotD to Reddit."
 
 print "Word was " + trello_card['name']
 print "Reddit URL is " + reddit_post.url

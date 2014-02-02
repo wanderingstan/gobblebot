@@ -2,8 +2,9 @@ import praw, time
 from trello import TrelloApi
 
 def post_trello_to_reddit(config):
-	"""
-	Post latest Trello card to reddit. Return's a tuple of the Trello card
+	"""Post latest Trello card to reddit. 
+
+	Return's a tuple of the Trello card
 	object and a created PRAW submission object.
 	"""
 	
@@ -34,16 +35,23 @@ def post_trello_to_reddit(config):
 	# TODO: Look through the 'due' dates and see if any cards is 'due' today,
 	# in which case it should be posted instead of the first
 
+	# Format our post title
+	new_card_name = (card_to_post['name'] + " " + 
+		time.strftime("%m/%d").replace('0', ''));
+	new_card_desc = card_to_post['desc']
+	if len(card_to_post['desc'])==0:
+		# Redit requires there to be *some* text in a text post!
+		new_card_desc="Word of the day."
+
 	# Create Reddit post from the card
 	reddit_submission = r.submit(
 		config['subreddit'], 
-		card_to_post['name'] + " " + time.strftime("%m/%d"), 
-		text=card_to_post['desc'])
+		new_card_name, 
+		text=new_card_desc)
 
-	# Add a note to desc indicating that the card was posted, with link to post
-	comment_text = ("I posted to /r/%s on %s with URL %s" % (
+	# Add a comment indicating that the card was posted, with link to post
+	comment_text = ("I posted this card to /r/%s with URL\n%s" % (
 		config['subreddit'],
-		time.strftime("%Y-%m-%d"),
 		reddit_submission.url))
 	trello.cards.new_action_comment(
 		card_to_post['id'],
