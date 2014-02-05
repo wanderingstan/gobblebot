@@ -9,16 +9,16 @@ def post_trello_to_reddit(config):
 	"""
 	
 	# Login to Reddit
-	user_agent = (config['bot_name']+" by /u/"+config['admin_reddit_user'])
+	user_agent = (config['BOT_NAME']+" by /u/"+config['ADMIN_REDDIT_USER'])
 	r = praw.Reddit(user_agent=user_agent)
-	r.login(config['bot_reddit_user'], config['bot_reddit_password'])
+	r.login(config['BOT_REDDIT_USER'], config['BOT_REDDIT_PASSWORD'])
 
 	# Login to Trello
-	trello = TrelloApi(config['trello_app_key'], token=config['trello_token'])
+	trello = TrelloApi(config['TRELLO_APP_KEY'], token=config['TRELLO_TOKEN'])
 
 	# Get cards in Queued List
 	queued_cards = trello.lists.get(
-		config['trello_queue_list_id'],
+		config['TRELLO_QUEUE_LIST_ID'],
 		cards='open',
 		card_fields='name,pos,desc,labels,due',
 		fields='name')['cards']
@@ -26,7 +26,7 @@ def post_trello_to_reddit(config):
 
 	# Get cards in Finished List
 	finished_cards = trello.lists.get(
-		config['trello_finished_list_id'],
+		config['TRELLO_FINISHED_LIST_ID'],
 		cards='open',
 		card_fields='name,pos',
 		fields='name')['cards']
@@ -45,13 +45,13 @@ def post_trello_to_reddit(config):
 
 	# Create Reddit post from the card
 	reddit_submission = r.submit(
-		config['subreddit'], 
+		config['SUBREDDIT'], 
 		new_card_name, 
 		text=new_card_desc)
 
 	# Add a comment indicating that the card was posted, with link to post
 	comment_text = ("I posted this card to /r/%s with URL\n%s" % (
-		config['subreddit'],
+		config['SUBREDDIT'],
 		reddit_submission.url))
 	trello.cards.new_action_comment(
 		card_to_post['id'],
@@ -60,13 +60,12 @@ def post_trello_to_reddit(config):
 	# Move the card to FINISHED list
 	trello_updated_card = trello.cards.update(
 		card_to_post['id'], 
-		idList=config['trello_finished_list_id'])
+		idList=config['TRELLO_FINISHED_LIST_ID'])
 
 	# # TODO: Move the card to the *top* of the FINISHED list
 	# # See here: http://stackoverflow.com/questions/14446859/what-does-the-pos-actually-mean-in-the-trello-api
 	# # The trello API has no method for changing the 'pos' field
  #    resp = requests.put("https://trello.com/1/cards/%s" % (card_id), params=dict(key=self._apikey, token=self._token), data=dict(name=name, desc=desc, closed=closed, idList=idList, due=due))
  #    resp.raise_for_status()
-
 
 	return reddit_submission, trello_updated_card
