@@ -1,6 +1,5 @@
 distribute==0.6.28
-numpy==1.6.2
-praw==2.1.12
+praw==3.3.0
 requests==2.2.1
 six==1.5.2
 trello==0.9.1
